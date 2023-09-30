@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
@@ -9,8 +10,11 @@ const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
 
 // Routers
-const QUESTION_ROUTER = require("./routers/question.router");
+const KNOWLEDGE_ROUTER = require("./routers/knowledge.router");
+const USER_ROUTER = require("./routers/user.router");
+const AUTH_ROUTER = require("./routers/auth.router");
 
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   bodyParser.json({
@@ -22,7 +26,9 @@ app.use(
   })
 );
 
-app.use("/questions", QUESTION_ROUTER);
+app.use("/knowledges", KNOWLEDGE_ROUTER);
+app.use("/users", USER_ROUTER);
+app.use("/auth", AUTH_ROUTER);
 
 const connectionOptions = {
   useNewUrlParser: true,
