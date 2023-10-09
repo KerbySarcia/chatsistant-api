@@ -10,6 +10,7 @@ const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
 
 // Routers
+const CONVERSATION_ROUTER = require("./routers/conversation.router");
 const KNOWLEDGE_ROUTER = require("./routers/knowledge.router");
 const USER_ROUTER = require("./routers/user.router");
 const AUTH_ROUTER = require("./routers/auth.router");
@@ -26,6 +27,7 @@ app.use(
   })
 );
 
+app.use("/conversations", CONVERSATION_ROUTER);
 app.use("/knowledges", KNOWLEDGE_ROUTER);
 app.use("/users", USER_ROUTER);
 app.use("/auth", AUTH_ROUTER);

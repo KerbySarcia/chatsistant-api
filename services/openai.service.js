@@ -15,7 +15,7 @@ const textCompletion = async (text, question) => {
     return "Api key not configured!";
   }
   const context = text.map((item) => `${item.information}`).toString();
-  const content = `Based on this context: \n\n ${RULES}.\n\n ${context} \n \n Query:${question} \n \n Answer: `;
+  const content = `Based on the following contexts: \n\n ${RULES}.\n\n ${context} \n \n Answer this question, considering the last query if there is any: "${question}" \n \n Answer: `;
   try {
     const completion = await ai.chat.completions.create({
       model: "gpt-3.5-turbo",
