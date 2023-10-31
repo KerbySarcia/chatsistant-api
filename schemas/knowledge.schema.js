@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 
 const KNOWLEDGE_SCHEMA = mongoose.Schema(
   {
-    // identifier: { type: String, required: true },
-    // tag: { type: String, required: true },
+    subject: { type: String, required: true },
+    target: { type: String, required: true },
     information: { type: String, required: true },
-    information_embedding: { type: Array },
+    knowledge_embedding: { type: Array },
   },
   {
     timestamps: true,

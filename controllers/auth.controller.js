@@ -10,7 +10,7 @@ const login = async (req, res) => {
   if (!isEmpty(error)) return res.status(400).json(error.message);
 
   const user = await USER_SCHEMA.findOne({
-    username: value.username,
+    email: value.email,
   }).exec();
 
   if (!user) return res.status(404).json("user does not exist.");

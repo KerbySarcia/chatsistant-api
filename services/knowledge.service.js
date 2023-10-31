@@ -1,9 +1,42 @@
+const { isEmpty } = require("lodash");
 const KNOWLEDGE_SCHEMA = require("../schemas/knowledge.schema");
 const getEmbedding = require("../utils/getEmbedding");
 const { textCompletion } = require("./openai.service");
 
-const getAll = async () => {
-  return await KNOWLEDGE_SCHEMA.find().lean().exec();
+const getAll = async (payload) => {
+  const page = parseInt(payload.page);
+  const limit = parseInt(payload?.limit || 10);
+  const skip = parseInt(page * limit);
+  let options = {};
+
+  if (payload?.options) {
+    const search = new RegExp(payload.toString(), "i");
+    options = {
+      $or: [{ subject: search }, { target: search }, { knowledge: search }],
+    };
+  }
+
+  const results = await KNOWLEDGE_SCHEMA.find(options)
+    .select({ information_embedding: false })
+    .skip(skip)
+    .limit(limit)
+    .lean()
+    .exec();
+  const totalCount = isEmpty(results)
+    ? 0
+    : await KNOWLEDGE_SCHEMA.count(payload.options);
+  const totalPages = Math.ceil(totalCount / payload.limit);
+  const hasNext = isEmpty(results) ? false : page !== totalPages;
+  const hasPrevious = isEmpty(results) ? false : page !== 1;
+
+  return {
+    items: results,
+    hasNext,
+    hasPrevious,
+    totalCount,
+    totalPages,
+    currentPage: page,
+  };
 };
 
 const create = async (payload) => {
@@ -39,12 +72,34 @@ const findSimilarKnowledges = async (payload) => {
       },
     },
   ]);
+
   const answer = await textCompletion(similarDocuments, payload.question);
   return answer;
+};
+
+const updateKnowledge = async (id, knowledge) => {
+  const updatedKnowledge = await KNOWLEDGE_SCHEMA.findOneAndUpdate(
+    { _id: id },
+    knowledge,
+    { new: true }
+  )
+    .lean()
+    .exec();
+
+  return updatedKnowledge;
+};
+
+const deleteKnowledge = async (id) => {
+  const deletedKnowledge = await KNOWLEDGE_SCHEMA.findOneAndDelete({
+    _id: id,
+  }).exec();
+  return deletedKnowledge;
 };
 
 module.exports = {
   getAll,
   create,
   findSimilarKnowledges,
+  updateKnowledge,
+  deleteKnowledge,
 };

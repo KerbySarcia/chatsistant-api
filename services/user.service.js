@@ -4,12 +4,12 @@ const { hashPassword } = require("../utils/password");
 
 const create = async (validatedUserCredentials) => {
   const duplicate = await USER_SCHEMA.findOne({
-    username: validatedUserCredentials.username,
+    email: validatedUserCredentials.email,
   })
     .lean()
     .exec();
 
-  if (duplicate) return { status: 409, data: "duplicate found." };
+  if (duplicate) return { status: 409, data: "Email is already used" };
 
   const password = await hashPassword(validatedUserCredentials.password);
 
