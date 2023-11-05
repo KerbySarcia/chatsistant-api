@@ -4,16 +4,13 @@ const getEmbedding = require("../utils/getEmbedding");
 const { textCompletion } = require("./openai.service");
 
 const getAll = async (payload) => {
-  const page = parseInt(payload.page);
+  const page = parseInt(payload.page || 1);
   const limit = parseInt(payload?.limit || 10);
-  const skip = parseInt(page * limit);
+  const skip = parseInt(page === 1 ? 0 : (page - 1) * limit);
   let options = {};
 
-  if (payload?.options) {
-    const search = new RegExp(payload.toString(), "i");
-    options = {
-      $or: [{ subject: search }, { target: search }, { knowledge: search }],
-    };
+  if (payload?.options && payload?.search) {
+    options = { [payload.options]: { $regex: payload.search } };
   }
 
   const results = await KNOWLEDGE_SCHEMA.find(options)
