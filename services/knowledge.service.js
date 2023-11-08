@@ -87,7 +87,6 @@ const findSimilarKnowledges = async (payload, email) => {
       console.log("created inquiry");
     }
   }
-
   const answer = await textCompletion(similarDocuments, payload?.question);
   return answer;
 };

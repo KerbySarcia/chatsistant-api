@@ -12,11 +12,16 @@ const getKnowledges = async (req, res) => {
 };
 
 const getKnowledge = async (req, res) => {
-  const knowledge = await knowledgeService.findSimilarKnowledges(
-    req.body,
-    req?.user?.email
-  );
-  return res.json(knowledge);
+  try {
+    const knowledge = await knowledgeService.findSimilarKnowledges(
+      req.body,
+      req?.user?.email
+    );
+    return res.json(knowledge);
+  } catch (error) {
+    console.log("getKnowledge error => ", error);
+    res.status(400).json(error);
+  }
 };
 
 const createKnowledge = async (req, res) => {

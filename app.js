@@ -1,4 +1,5 @@
 require("dotenv").config();
+require("express-async-errors");
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -15,6 +16,7 @@ const KNOWLEDGE_ROUTER = require("./routers/knowledge.router");
 const USER_ROUTER = require("./routers/user.router");
 const AUTH_ROUTER = require("./routers/auth.router");
 
+// app.use(cors());
 app.use(cors({ origin: "https://chatsistant-staging-front.onrender.com" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
