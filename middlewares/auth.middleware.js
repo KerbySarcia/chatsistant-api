@@ -13,7 +13,7 @@ const verifyAuth = async (req, res, next) => {
     const token = authToken.replace("Bearer ", "");
 
     const verifiedToken = jwt.verify(token, PASS_PHRASE);
-    console.log("verified token =>", verifiedToken);
+
     const userId = get(verifiedToken, "id", "");
 
     if (!isEmpty(verifiedToken) && userId) {
@@ -21,7 +21,6 @@ const verifyAuth = async (req, res, next) => {
 
       if (!user)
         return res.status(401).json({ message: "User does not exist." });
-
       req.user = user;
       res.locals.currentUser = user;
       next();

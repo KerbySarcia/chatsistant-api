@@ -12,7 +12,10 @@ const getKnowledges = async (req, res) => {
 };
 
 const getKnowledge = async (req, res) => {
-  const knowledge = await knowledgeService.findSimilarKnowledges(req.body);
+  const knowledge = await knowledgeService.findSimilarKnowledges(
+    req.body,
+    req?.user?.email
+  );
   return res.json(knowledge);
 };
 

@@ -5,9 +5,12 @@ const createCommunication = async (req, res) => {
   const { message } = req.body;
   const { user } = req;
 
-  const aiResponse = await knowledgeService.findSimilarKnowledges({
-    question: message,
-  });
+  const aiResponse = await knowledgeService.findSimilarKnowledges(
+    {
+      question: message,
+    },
+    user?.email
+  );
 
   const appendUserMessage = await conversationService.appendConversation({
     userId: user._id,

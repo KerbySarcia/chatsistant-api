@@ -14,14 +14,46 @@ const textCompletion = async (text, question) => {
   if (!ai.apiKey) {
     return "Api key not configured!";
   }
-  const context = text.map((item) => `${item.information}`).toString();
+  const context = text.map((item) => `${item.value}`).toString();
   const content = `Based on the following contexts: \n\n ${RULES}.\n\n ${context} \n \n Answer this question, considering the last query if there is any: "${question}" \n \n Answer: `;
   try {
     const completion = await ai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
-          role: "assistant",
+          role: "system",
+          content: content,
+        },
+      ],
+    });
+    return completion.choices[0].message.content;
+  } catch (error) {
+    // Consider adjusting the error handling logic for your use case
+    if (error.response) {
+      console.error(error.response.status, error.response.data);
+      res.status(error.response.status).json(error.response.data);
+    } else {
+      console.error(`Error with OpenAI API request: ${error.message}`);
+      res.status(500).json({
+        error: {
+          message: "An error occurred during your request.",
+        },
+      });
+    }
+  }
+};
+
+const validateQuestion = async (question) => {
+  if (!ai.apiKey) {
+    return "Api key not configured!";
+  }
+  const content = `Validate the context if it is related to school information or university information.\n Context:${question} \n \n return only 0 if valid and 1 if its not.`;
+  try {
+    const completion = await ai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
           content: content,
         },
       ],
@@ -45,4 +77,5 @@ const textCompletion = async (text, question) => {
 
 module.exports = {
   textCompletion,
+  validateQuestion,
 };

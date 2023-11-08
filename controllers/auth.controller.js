@@ -13,17 +13,23 @@ const login = async (req, res) => {
     email: value.email,
   }).exec();
 
-  if (!user) return res.status(404).json("user does not exist.");
+  if (!user) return res.status(404).json("Invalid credentials");
 
   const isEqual = await comparePassword(value.password, user.password);
 
-  if (!isEqual) return res.status(400).json("password is not equal.");
+  if (!isEqual) return res.status(400).json("Invalid credentials");
 
   const userObject = {
     id: user._id,
   };
 
-  const userDetails = pick(user, ["_id", "first_name", "last_name"]);
+  const userDetails = pick(user, [
+    "_id",
+    "first_name",
+    "last_name",
+    "email",
+    "role",
+  ]);
 
   const authToken = auth.signIn(userObject);
 

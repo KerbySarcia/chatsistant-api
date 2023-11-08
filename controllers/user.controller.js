@@ -1,5 +1,5 @@
 const userService = require("../services/user.service");
-const { isEmpty } = require("lodash");
+const { isEmpty, get } = require("lodash");
 const { userRegistrationValidator } = require("../validator/user.validator");
 
 const registerUser = async (req, res) => {
@@ -12,6 +12,13 @@ const registerUser = async (req, res) => {
   return res.status(registeredUser.status).json(registeredUser.data);
 };
 
+const getCurrentUser = async (_, res) => {
+  const user = get(res, "locals.currentUser");
+  const currentUser = await userService.findUser({ _id: user._id });
+  return res.json(currentUser);
+};
+
 module.exports = {
   registerUser,
+  getCurrentUser,
 };
