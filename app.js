@@ -25,6 +25,8 @@ app.use(
         callback(null, true);
       } else callback(new Error("Not Allowed By CORS"));
     },
+    credentials: true,
+    optionsSuccessStatus: 200,
   })
 );
 app.use(bodyParser.urlencoded({ extended: true }));
