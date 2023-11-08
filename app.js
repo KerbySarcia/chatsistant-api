@@ -15,20 +15,7 @@ const KNOWLEDGE_ROUTER = require("./routers/knowledge.router");
 const USER_ROUTER = require("./routers/user.router");
 const AUTH_ROUTER = require("./routers/auth.router");
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (
-        ["https://chatsistant-staging-front.onrender.com"].includes(origin) ||
-        !origin
-      ) {
-        callback(null, true);
-      } else callback(new Error("Not Allowed By CORS"));
-    },
-    credentials: true,
-    optionsSuccessStatus: 200,
-  })
-);
+app.use(cors({ origin: "*" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   bodyParser.json({
