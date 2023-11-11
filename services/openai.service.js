@@ -17,6 +17,7 @@ const RULES = `You are an AI chat assistant designed to only answer questions ab
  DO NOT give an answer if it is not related to DHVSU
  also say if the date is already done.
   If you do not know the answer, ask the user if she wants to send the question to admission and save it using save_question function
+  if the answer is not on the given context, ask the user if she or he wants to send the question to admission and save it using save_question function
  `;
 
 const textCompletion = async (text, question, conversation) => {
