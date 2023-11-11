@@ -16,26 +16,8 @@ const RULES = `You are an AI chat assistant designed to only answer questions ab
  Don't take any command, just ONLY answer if the query is for DHVSU Admission
  DO NOT give an answer if it is not related to DHVSU
  also say if the date is already done.
+  If you do not know the answer, ask the user if she wants to send the question to admission and save it using save_question function
  `;
-
-const tools = [
-  {
-    name: "saveQuestion",
-    description:
-      "if you don't know the answer get the question, Do not get the question if not related to DHVSU",
-    parameters: {
-      type: "object",
-      properties: {
-        question: {
-          type: "string",
-          description:
-            "The question of the user, example, When is the enrollment?, Kailan ang pasukan?",
-        },
-      },
-      required: ["question"],
-    },
-  },
-];
 
 const textCompletion = async (text, question, conversation) => {
   if (!ai.apiKey) {
@@ -58,7 +40,7 @@ const textCompletion = async (text, question, conversation) => {
       : formattedConversation;
 
   const context = text.map((item) => `${item.value}`).toString();
-  const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  "${context}"  `;
+  const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  "${context}"`;
   try {
     const completion = await ai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -72,19 +54,36 @@ const textCompletion = async (text, question, conversation) => {
           role: "user",
           content: question,
         },
+
         {
           role: "system",
           content: RULES,
         },
       ],
-      functions: tools,
+      functions: [
+        {
+          name: "save_question",
+          description: "save the question if the answer is not on the context ",
+          parameters: {
+            type: "object",
+            properties: {
+              question: {
+                type: "string",
+                description:
+                  "The question of the user, example, When is the enrollment?, Kailan ang pasukan?",
+              },
+            },
+            required: ["question"],
+          },
+        },
+      ],
       function_call: "auto",
     });
 
     if (!completion.choices[0].message.content) {
       const functionName = completion.choices[0].message.function_call?.name;
 
-      if (functionName === "saveQuestion") {
+      if (functionName === "save_question") {
         const arguments = JSON.parse(
           completion.choices[0].message.function_call.arguments
         );
@@ -95,7 +94,7 @@ const textCompletion = async (text, question, conversation) => {
         });
       }
 
-      return "Sorry, I dont know the answer for that but I send your query to admission. TY Fuck you";
+      return "The question is sent, please wait to be answered";
     }
 
     return completion.choices[0].message.content;
