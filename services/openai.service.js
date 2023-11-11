@@ -52,7 +52,11 @@ const textCompletion = async (text, question, conversation) => {
           content: convo,
         }
   );
-  const fivePreviousHistory = formattedConversation.slice(-5);
+  const fivePreviousHistory =
+    formattedConversation.length > 5
+      ? formattedConversation.slice(-5)
+      : formattedConversation;
+
   const context = text.map((item) => `${item.value}`).toString();
   const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  "${context}"  `;
   try {
