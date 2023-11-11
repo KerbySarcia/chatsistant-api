@@ -6,7 +6,6 @@ const KNOWLEDGE_SCHEMA = mongoose.Schema(
     target: { type: String, required: true },
     information: { type: String, required: true },
     // knowledge_embedding: { type: Array },
-    value: { type: String, required: true },
   },
   {
     timestamps: true,

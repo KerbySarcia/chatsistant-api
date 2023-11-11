@@ -4,7 +4,6 @@ const createKnowledgeValidator = joi.object({
   subject: joi.string().required(),
   target: joi.string().required(),
   information: joi.string().min(20).required(),
-  value: joi.string().min(20).required(),
 });
 
 const updateKnowledgeValidator = joi.object({

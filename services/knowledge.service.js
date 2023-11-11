@@ -2,7 +2,6 @@ const { isEmpty } = require("lodash");
 const KNOWLEDGE_SCHEMA = require("../schemas/knowledge.schema");
 const getEmbedding = require("../utils/getEmbedding");
 const { textCompletion, validateQuestion } = require("./openai.service");
-const inquiryService = require("../services/inquires.service");
 const conversationService = require("../services/conversation.service");
 
 const getAll = async (payload) => {
@@ -66,11 +65,13 @@ const findSimilarKnowledges = async (payload, user) => {
     {
       $project: {
         _id: 0,
-        value: 1,
+        information: 1,
         score: { $meta: "searchScore" },
       },
     },
   ]);
+
+  console.log(similarDocuments);
 
   const conversations = await conversationService.getConversation({
     // _id: user?._id.toString().replace(/ObjectId\("(.*)"\)/, "$1"),

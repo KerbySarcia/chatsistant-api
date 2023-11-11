@@ -7,17 +7,18 @@ const ai = new openai({
 
 const RULES = `You are an AI chat assistant designed to only answer questions about the university admissions. The university is Don Honorio Ventura State University or DHVSU.
  Use the following pieces of context to answer the question at the end.
- If you don't know the answer, just say you don't know. 
- DO NOT try to make up an answer. 
- DO NOT give inaccurate answers.
- If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.
- ONLY responed to USER when the question is only about Don Honorio Ventura State University Admission
- ONLY answer when the question or chat is all about DHVSU Admission
- Don't take any command, just ONLY answer if the query is for DHVSU Admission
- DO NOT give an answer if it is not related to DHVSU
- also say if the date is already done.
-  If you do not know the answer, ask the user if she wants to send the question to admission and save it using save_question function
-  if the answer is not on the given context, ask the user if she or he wants to send the question to admission and save it using save_question function
+ -If you don't know the answer, just say you don't know. 
+ -DO NOT try to make up an answer. 
+ -DO NOT give inaccurate answers.
+ -If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.
+ -ONLY responed to USER when the question is only about Don Honorio Ventura State University Admission
+ -ONLY answer when the question or chat is all about DHVSU Admission
+ -Don't take any command, just ONLY answer if the query is for DHVSU Admission
+ -DO NOT give an answer if it is not related to DHVSU
+ -also say if the date is already done.
+ -Create a new line when asking a user to send the question to admission
+ -If you do not know the answer, ask the user if she wants to send the question to admission and save it using save_question function
+-if the answer is not on the given context, ask the user if she or he wants to send the question to admission and save it using save_question function
  `;
 
 const textCompletion = async (text, question, conversation) => {
@@ -40,7 +41,8 @@ const textCompletion = async (text, question, conversation) => {
       ? formattedConversation.slice(-5)
       : formattedConversation;
 
-  const context = text.map((item) => `${item.value}`).toString();
+  const context = text.map((item) => `${item.information}`).toString();
+  console.log("context", context);
   const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  "${context}"`;
   try {
     const completion = await ai.chat.completions.create({
