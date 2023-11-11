@@ -56,7 +56,7 @@ const textCompletion = async (text, question, conversation) => {
   const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  "${context}"  `;
   try {
     const completion = await ai.chat.completions.create({
-      model: "gpt-3.5-turbo-0613",
+      model: "gpt-4",
       messages: [
         {
           role: "system",
