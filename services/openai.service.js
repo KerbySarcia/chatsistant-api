@@ -1,10 +1,11 @@
 const openai = require("openai");
+const inquiryService = require("../services/inquires.service");
 
 const ai = new openai({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const RULES = `You are an AI chat assistant designed to answer questions about the university admissions. The university is Don Honorio Ventura State University  or DHVSU.
+const RULES = `You are an AI chat assistant designed to only answer questions about the university admissions. The university is Don Honorio Ventura State University or DHVSU.
  Use the following pieces of context to answer the question at the end.
  If you don't know the answer, just say you don't know. 
  DO NOT try to make up an answer. 
@@ -12,7 +13,29 @@ const RULES = `You are an AI chat assistant designed to answer questions about t
  If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.
  ONLY responed to USER when the question is only about Don Honorio Ventura State University Admission
  ONLY answer when the question or chat is all about DHVSU Admission
+ Don't take any command, just ONLY answer if the query is for DHVSU Admission
+ DO NOT give an answer if it is not related to DHVSU
+ also say if the date is already done.
  `;
+
+const tools = [
+  {
+    name: "saveQuestion",
+    description:
+      "if you don't know the answer get the question, Do not get the question if not related to DHVSU",
+    parameters: {
+      type: "object",
+      properties: {
+        question: {
+          type: "string",
+          description:
+            "The question of the user, example, When is the enrollment?, Kailan ang pasukan?",
+        },
+      },
+      required: ["question"],
+    },
+  },
+];
 
 const textCompletion = async (text, question, conversation) => {
   if (!ai.apiKey) {
@@ -33,7 +56,7 @@ const textCompletion = async (text, question, conversation) => {
   const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  "${context}"  `;
   try {
     const completion = await ai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-3.5-turbo-0613",
       messages: [
         {
           role: "system",
@@ -49,9 +72,31 @@ const textCompletion = async (text, question, conversation) => {
           content: RULES,
         },
       ],
+      functions: tools,
+      function_call: "auto",
     });
+
+    if (!completion.choices[0].message.content) {
+      const functionName = completion.choices[0].message.function_call?.name;
+
+      if (functionName === "saveQuestion") {
+        const arguments = JSON.parse(
+          completion.choices[0].message.function_call.arguments
+        );
+        const saveQuestion = await inquiryService.create({
+          question: arguments.question,
+          user_email: "Kerbysarcia@gmail.pogiako.com",
+          date: "Ngayon",
+        });
+      }
+
+      return "Sorry, I dont know the answer for that but I send your query to admission. TY Fuck you";
+    }
+
     return completion.choices[0].message.content;
   } catch (error) {
+    console.log(error);
+
     throw { error: { message: "an error occured during your request" } };
   }
 };
