@@ -52,17 +52,18 @@ const textCompletion = async (text, question, conversation) => {
           content: convo,
         }
   );
+  const fivePreviousHistory = formattedConversation.slice(-5);
   const context = text.map((item) => `${item.value}`).toString();
   const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  "${context}"  `;
   try {
     const completion = await ai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
           content: content,
         },
-        ...formattedConversation,
+        ...fivePreviousHistory,
         {
           role: "user",
           content: question,
