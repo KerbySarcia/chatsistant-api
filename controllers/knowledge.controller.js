@@ -15,7 +15,7 @@ const getKnowledge = async (req, res) => {
   try {
     const knowledge = await knowledgeService.findSimilarKnowledges(
       req.body,
-      req?.user?.email
+      res?.locals?.currentUser
     );
     return res.json(knowledge);
   } catch (error) {

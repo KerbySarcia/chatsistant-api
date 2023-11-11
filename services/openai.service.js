@@ -4,18 +4,33 @@ const ai = new openai({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const RULES = `You are an AI chat assistant designed to answer questions about university admissions.
+const RULES = `You are an AI chat assistant designed to answer questions about the university admissions. The university is Don Honorio Ventura State University  or DHVSU.
  Use the following pieces of context to answer the question at the end.
  If you don't know the answer, just say you don't know. 
  DO NOT try to make up an answer. 
- If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.`;
+ DO NOT give inaccurate answers.
+ If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.
+ ONLY responed to USER when the question is only about Don Honorio Ventura State University Admission
+ ONLY answer when the question or chat is all about DHVSU Admission
+ `;
 
-const textCompletion = async (text, question) => {
+const textCompletion = async (text, question, conversation) => {
   if (!ai.apiKey) {
     return "Api key not configured!";
   }
+  const formattedConversation = conversation.map((convo, key) =>
+    key % 2 === 0
+      ? {
+          role: "user",
+          content: convo,
+        }
+      : {
+          role: "assistant",
+          content: convo,
+        }
+  );
   const context = text.map((item) => `${item.value}`).toString();
-  const content = `Based on the following contexts: \n\n ${RULES}.\n\n ${context} \n \n Answer this question, considering the last query if there is any: "${question}" \n \n Answer: `;
+  const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  "${context}"  `;
   try {
     const completion = await ai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -23,6 +38,15 @@ const textCompletion = async (text, question) => {
         {
           role: "system",
           content: content,
+        },
+        ...formattedConversation,
+        {
+          role: "user",
+          content: question,
+        },
+        {
+          role: "system",
+          content: RULES,
         },
       ],
     });

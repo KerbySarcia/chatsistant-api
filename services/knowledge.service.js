@@ -3,6 +3,7 @@ const KNOWLEDGE_SCHEMA = require("../schemas/knowledge.schema");
 const getEmbedding = require("../utils/getEmbedding");
 const { textCompletion, validateQuestion } = require("./openai.service");
 const inquiryService = require("../services/inquires.service");
+const conversationService = require("../services/conversation.service");
 
 const getAll = async (payload) => {
   const page = parseInt(payload.page || 1);
@@ -48,7 +49,7 @@ const create = async (payload) => {
   return await KNOWLEDGE_SCHEMA.create(payload);
 };
 
-const findSimilarKnowledges = async (payload, email) => {
+const findSimilarKnowledges = async (payload, user) => {
   const embedding = await getEmbedding(payload.question);
 
   let similarDocuments = await KNOWLEDGE_SCHEMA.aggregate([
@@ -71,23 +72,16 @@ const findSimilarKnowledges = async (payload, email) => {
     },
   ]);
 
-  similarDocuments = similarDocuments.filter(
-    (document) => document?.score > 0.93
+  const conversations = await conversationService.getConversation({
+    // _id: user?._id.toString().replace(/ObjectId\("(.*)"\)/, "$1"),
+    userId: user?._id,
+  });
+
+  const answer = await textCompletion(
+    similarDocuments,
+    payload?.question,
+    conversations.conversation_history
   );
-
-  if (isEmpty(similarDocuments)) {
-    similarDocuments = [];
-    const isValidQuestion = await validateQuestion(payload?.question);
-
-    if (isValidQuestion.includes("0")) {
-      await inquiryService.create({
-        ...payload,
-        user_email: email,
-      });
-      console.log("created inquiry");
-    }
-  }
-  const answer = await textCompletion(similarDocuments, payload?.question);
   return answer;
 };
 

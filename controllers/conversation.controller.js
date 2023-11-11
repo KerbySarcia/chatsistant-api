@@ -9,7 +9,7 @@ const createCommunication = async (req, res) => {
     {
       question: message,
     },
-    user?.email
+    user
   );
 
   const appendUserMessage = await conversationService.appendConversation({
