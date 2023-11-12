@@ -11,7 +11,7 @@ const getAll = async (payload) => {
   let options = {};
 
   if (payload?.options && payload?.search) {
-    options = { [payload.options]: { $regex: payload.search } };
+    options = { [payload.options]: { $regex: payload.search, $options: "i" } };
   }
 
   const results = await KNOWLEDGE_SCHEMA.find(options)
