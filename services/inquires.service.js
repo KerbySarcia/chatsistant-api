@@ -16,34 +16,16 @@ const create = async (payload) => {
 };
 
 const getAll = async (payload) => {
-  const page = parseInt(payload.page || 1);
-  const limit = parseInt(payload?.limit || 10);
-  const skip = parseInt(page === 1 ? 0 : (page - 1) * limit);
   let options = {};
 
   if (payload?.options && payload?.search) {
     options = { [payload.options]: { $regex: payload.search } };
   }
 
-  const results = await INQUIRIES_SCHEMA.find(options)
-    .skip(skip)
-    .limit(limit)
-    .lean()
-    .exec();
-  const totalCount = isEmpty(results)
-    ? 0
-    : await INQUIRIES_SCHEMA.count(payload.options);
-  const totalPages = Math.ceil(totalCount / payload.limit);
-  const hasNext = isEmpty(results) ? false : page !== totalPages;
-  const hasPrevious = isEmpty(results) ? false : page !== 1;
+  const results = await INQUIRIES_SCHEMA.find(options).lean().exec();
 
   return {
     items: results,
-    hasNext,
-    hasPrevious,
-    totalCount,
-    totalPages,
-    currentPage: page,
   };
 };
 

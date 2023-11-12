@@ -8,7 +8,7 @@ const transporter = createTransport({
   service: "gmail",
   auth: {
     user: "chatsistant@gmail.com",
-    pass: "gion mvcp bscs nzot",
+    pass: process.env.GMAIL_KEY,
   },
 });
 

@@ -5,9 +5,6 @@ const { textCompletion, validateQuestion } = require("./openai.service");
 const conversationService = require("../services/conversation.service");
 
 const getAll = async (payload) => {
-  const page = parseInt(payload.page || 1);
-  const limit = parseInt(payload?.limit || 10);
-  const skip = parseInt(page === 1 ? 0 : (page - 1) * limit);
   let options = {};
 
   if (payload?.options && payload?.search) {
@@ -16,24 +13,11 @@ const getAll = async (payload) => {
 
   const results = await KNOWLEDGE_SCHEMA.find(options)
     .select({ information_embedding: false })
-    .skip(skip)
-    .limit(limit)
     .lean()
     .exec();
-  const totalCount = isEmpty(results)
-    ? 0
-    : await KNOWLEDGE_SCHEMA.count(payload.options);
-  const totalPages = Math.ceil(totalCount / payload.limit);
-  const hasNext = isEmpty(results) ? false : page !== totalPages;
-  const hasPrevious = isEmpty(results) ? false : page !== 1;
 
   return {
     items: results,
-    hasNext,
-    hasPrevious,
-    totalCount,
-    totalPages,
-    currentPage: page,
   };
 };
 
@@ -92,7 +76,7 @@ const updateKnowledge = async (id, knowledge) => {
   const updatedKnowledge = await KNOWLEDGE_SCHEMA.findOneAndUpdate(
     { _id: id },
     knowledge,
-    { new: true }
+    { new: true, projection: { information_embedding: 0 } }
   )
     .lean()
     .exec();
