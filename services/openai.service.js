@@ -19,9 +19,9 @@ const RULES = `You are an AI chat assistant designed to only answer questions ab
  -Create a new line when asking a user to send the question to admission
  -If you do not know the answer, ask the user if she wants to send the question to admission and save it using save_question function
 -if the answer is not on the given context, ask the user if she or he wants to send the question to admission and save it using save_question function
- `;
+ - Again when you do not know the answer, ask the user if he wants to send the question to admission and send it.`;
 
-const textCompletion = async (text, question, conversation) => {
+const textCompletion = async (text, question, conversation, user) => {
   if (!ai.apiKey) {
     return "Api key not configured!";
   }
@@ -42,8 +42,8 @@ const textCompletion = async (text, question, conversation) => {
       : formattedConversation;
 
   const context = text.map((item) => `${item.information}`).toString();
-  console.log("context", context);
-  const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  "${context}"`;
+  const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  "${context}" 
+  If you don't know the answer ask the user if she wants to save the question to admission and send it use save_question.`;
   try {
     const completion = await ai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -56,6 +56,11 @@ const textCompletion = async (text, question, conversation) => {
         {
           role: "user",
           content: question,
+        },
+        {
+          role: "user",
+          content:
+            "If you don't know the answer ask the user if she wants to save the question to admission and send it use save_question",
         },
 
         {
@@ -92,8 +97,9 @@ const textCompletion = async (text, question, conversation) => {
         );
         const saveQuestion = await inquiryService.create({
           question: arguments.question,
-          user_email: "Kerbysarcia@gmail.pogiako.com",
-          date: "Ngayon",
+          user_name: user.user_name,
+          user_email: user.user_email,
+          date: user.date,
         });
       }
 

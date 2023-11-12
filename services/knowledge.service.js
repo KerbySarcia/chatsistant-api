@@ -71,17 +71,19 @@ const findSimilarKnowledges = async (payload, user) => {
     },
   ]);
 
-  console.log(similarDocuments);
-
   const conversations = await conversationService.getConversation({
-    // _id: user?._id.toString().replace(/ObjectId\("(.*)"\)/, "$1"),
     userId: user?._id,
   });
 
   const answer = await textCompletion(
     similarDocuments,
     payload?.question,
-    conversations.conversation_history
+    conversations.conversation_history,
+    {
+      user_name: user.first_name + " " + user.last_name,
+      user_email: user.email,
+      date: user.createdAt,
+    }
   );
   return answer;
 };

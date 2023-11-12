@@ -15,6 +15,7 @@ const CONVERSATION_ROUTER = require("./routers/conversation.router");
 const KNOWLEDGE_ROUTER = require("./routers/knowledge.router");
 const USER_ROUTER = require("./routers/user.router");
 const AUTH_ROUTER = require("./routers/auth.router");
+const INQUIRY_ROUTER = require("./routers/inquries.router");
 
 // app.use(cors());
 app.use(cors({ origin: "https://chatsistant-staging-front.onrender.com" }));
@@ -33,6 +34,7 @@ app.use("/conversations", CONVERSATION_ROUTER);
 app.use("/knowledges", KNOWLEDGE_ROUTER);
 app.use("/users", USER_ROUTER);
 app.use("/auth", AUTH_ROUTER);
+app.use("/inquiries", INQUIRY_ROUTER);
 
 const connectionOptions = {
   useNewUrlParser: true,
