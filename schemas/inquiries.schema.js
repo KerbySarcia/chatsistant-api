@@ -5,6 +5,7 @@ const INQUIRIES_SCHEMA = mongoose.Schema({
   user_email: { type: String, required: true },
   date: { type: String, required: true },
   user_name: { type: String, required: true },
+  answer: { type: String },
   status: {
     type: String,
     enum: ["PENDING", "IGNORED", "DONE"],

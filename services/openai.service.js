@@ -19,7 +19,8 @@ const RULES = `You are an AI chat assistant designed to only answer questions ab
  -Create a new line when asking a user to send the question to admission
  -If you do not know the answer, ask the user if she wants to send the question to admission and save it using save_question function
 -if the answer is not on the given context, ask the user if she or he wants to send the question to admission and save it using save_question function
- - Again when you do not know the answer, ask the user if he wants to send the question to admission and send it.`;
+ - Again when you do not know the answer, ask the user if he wants to send the question to admission and send it.
+ - Don't save the question if not related to Don Honorio Ventura State University`;
 
 const textCompletion = async (text, question, conversation, user) => {
   if (!ai.apiKey) {
@@ -42,31 +43,26 @@ const textCompletion = async (text, question, conversation, user) => {
       : formattedConversation;
 
   const context = text.map((item) => `${item.information}`).toString();
-  const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  "${context}" 
+  const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  context only,  context:"${context}" 
   If you don't know the answer ask the user if she wants to save the question to admission and send it use save_question.`;
   try {
     const completion = await ai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
-        {
-          role: "system",
-          content: content,
-        },
         ...fivePreviousHistory,
         {
           role: "user",
           content: question,
         },
         {
-          role: "user",
-          content:
-            "If you don't know the answer ask the user if she wants to save the question to admission and send it use save_question",
+          role: "system",
+          content: content,
         },
 
-        {
-          role: "system",
-          content: RULES,
-        },
+        // {
+        //   role: "system",
+        //   content: RULES,
+        // },
       ],
       functions: [
         {

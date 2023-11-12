@@ -18,7 +18,13 @@ const getCurrentUser = async (_, res) => {
   return res.json(currentUser);
 };
 
+const sendEmail = async (req, res) => {
+  const responseEmail = await userService.sendEmail(req.body);
+  res.json(responseEmail);
+};
+
 module.exports = {
   registerUser,
   getCurrentUser,
+  sendEmail,
 };

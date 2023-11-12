@@ -50,7 +50,7 @@ const getAll = async (payload) => {
 const updateStatus = async (credentials) => {
   const inquiry = await INQUIRIES_SCHEMA.findOneAndUpdate(
     { _id: credentials._id },
-    { status: credentials.status },
+    { status: credentials.status, answer: credentials.answer },
     {
       new: true,
     }
