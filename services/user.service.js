@@ -52,8 +52,30 @@ const findUser = async (option) => {
   return await USER_SCHEMA.findOne(option);
 };
 
+const getUsers = async () => {
+  return await USER_SCHEMA.find().select({ password: 0 }).lean().exec();
+};
+
+const deleteUser = async (id) => {
+  return await USER_SCHEMA.findOneAndDelete({ _id: id }).lean().exec();
+};
+
+const updateUser = async (id, credentials) => {
+  const user = await USER_SCHEMA.findOneAndUpdate({ _id: id }, credentials, {
+    new: true,
+    projection: { password: 0 },
+  })
+    .lean()
+    .exec();
+
+  return user;
+};
+
 module.exports = {
   create,
   sendEmail,
   findUser,
+  getUsers,
+  deleteUser,
+  updateUser,
 };

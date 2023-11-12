@@ -23,8 +23,28 @@ const sendEmail = async (req, res) => {
   res.json(responseEmail);
 };
 
+const getUsers = async (req, res) => {
+  const users = await userService.getUsers();
+  return res.json(users);
+};
+
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  const deletedUser = await userService.deleteUser(id);
+  return res.json(deletedUser);
+};
+
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const user = await userService.updateUser(id, req.body);
+  return res.json(user);
+};
+
 module.exports = {
   registerUser,
   getCurrentUser,
   sendEmail,
+  getUsers,
+  deleteUser,
+  updateUser,
 };

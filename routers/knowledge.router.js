@@ -3,7 +3,7 @@ const router = express();
 const authMiddleware = require("../middlewares/auth.middleware");
 const knowledgeController = require("../controllers/knowledge.controller");
 
-router.get("/", knowledgeController.getKnowledges);
+router.get("/", authMiddleware.verifyAuth, knowledgeController.getKnowledges);
 router.post(
   "/ask",
   authMiddleware.verifyAuth,
