@@ -15,4 +15,10 @@ router.get(
   conversationController.getConversation
 );
 
+router.put(
+  "/:id",
+  authMiddleware.verifyAuth,
+  conversationController.updateConversation
+);
+
 module.exports = router;

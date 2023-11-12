@@ -28,8 +28,17 @@ const createConversation = async (userId) => {
   return newConversation;
 };
 
+const updateConversation = async (id, payload) => {
+  return await CONVERSATION_SCHEMA.findOneAndUpdate({ userId: id }, payload, {
+    new: true,
+  })
+    .lean()
+    .exec();
+};
+
 module.exports = {
   getConversation,
   appendConversation,
   createConversation,
+  updateConversation,
 };

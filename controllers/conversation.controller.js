@@ -32,7 +32,18 @@ const getConversation = async (req, res) => {
   return res.json(conversation);
 };
 
+const updateConversation = async (req, res) => {
+  const { id } = req.params;
+  const conversation = await conversationService.updateConversation(
+    id,
+    req.body
+  );
+
+  return res.json(conversation);
+};
+
 module.exports = {
   createCommunication,
   getConversation,
+  updateConversation,
 };
