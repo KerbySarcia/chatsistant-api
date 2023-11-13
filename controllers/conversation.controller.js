@@ -1,5 +1,6 @@
 const conversationService = require("../services/conversation.service");
 const knowledgeService = require("../services/knowledge.service");
+const inquiryService = require("../services/number-of-inquiries.service");
 
 const createCommunication = async (req, res) => {
   const { message } = req.body;
@@ -11,7 +12,10 @@ const createCommunication = async (req, res) => {
     },
     user
   );
-
+  const addQuestion = await inquiryService.updateSchema({
+    user_id: user._id,
+    message,
+  });
   const appendUserMessage = await conversationService.appendConversation({
     userId: user._id,
     messages: [{ message: message, role: "user" }, aiResponse],
