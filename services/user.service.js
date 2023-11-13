@@ -39,8 +39,21 @@ const create = async (validatedUserCredentials) => {
     " " +
     validatedUserCredentials.last_name;
 
+  const greetings = [
+    `Hello, ${name}! What can I do for you?`,
+    `Hi there, ${name}! How may I assist you today?`,
+    `Greetings, ${name}! How can I help you?`,
+    `Hey, ${name}! What brings you here?`,
+    `Hello and welcome, ${name}! What can I assist you with?`,
+    `Hi, ${name}! How can I be of service today?`,
+    `Greetings, ${name}! What can I help you with right now?`,
+    `Hey there, ${name}! How may I assist you?`,
+    `Hello, ${name}! What can I do to make your day better?`,
+    `Hi, ${name}! How can I support you at the moment?`,
+  ];
+
   const greeting = {
-    message: `Hello ${name}, how can I assist you today?`,
+    message: greetings[Math.floor(Math.random() * greetings.length)],
     role: "assistant",
   };
 
