@@ -34,6 +34,21 @@ const create = async (validatedUserCredentials) => {
     newUser._id
   );
 
+  const name =
+    validatedUserCredentials.first_name +
+    " " +
+    validatedUserCredentials.last_name;
+
+  const greeting = {
+    message: `Hello ${name}, how can I assist you today?`,
+    role: "assistant",
+  };
+
+  const addGreetings = await conversationService.updateConversation(
+    newUser._id,
+    { conversation_history: [greeting] }
+  );
+
   return { status: 200, data: newUser };
 };
 

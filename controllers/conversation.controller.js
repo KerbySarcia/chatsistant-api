@@ -14,7 +14,7 @@ const createCommunication = async (req, res) => {
 
   const appendUserMessage = await conversationService.appendConversation({
     userId: user._id,
-    messages: [message, aiResponse],
+    messages: [{ message: message, role: "user" }, aiResponse],
   });
 
   return res.json(aiResponse);

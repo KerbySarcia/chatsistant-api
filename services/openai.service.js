@@ -6,57 +6,51 @@ const ai = new openai({
 });
 
 const RULES = `You are an AI chat assistant designed to only answer questions about the university admissions. The university is Don Honorio Ventura State University or DHVSU.
- Use the following pieces of context to answer the question at the end.
- -If you don't know the answer, just say you don't know. 
- -DO NOT try to make up an answer. 
- -DO NOT give inaccurate answers.
- -If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.
- -ONLY responed to USER when the question is only about Don Honorio Ventura State University Admission
- -ONLY answer when the question or chat is all about DHVSU Admission
- -Don't take any command, just ONLY answer if the query is for DHVSU Admission
- -DO NOT give an answer if it is not related to DHVSU
- -also say if the date is already done.
- -Create a new line when asking a user to send the question to admission
- -If you do not know the answer, ask the user if she wants to send the question to admission and save it using save_question function
--if the answer is not on the given context, ask the user if she or he wants to send the question to admission and save it using save_question function
- - Again when you do not know the answer, ask the user if he wants to send the question to admission and send it.
- - Don't save the question if not related to Don Honorio Ventura State University`;
+ Use the following pieces of context to answer the question at the end.\n
+ -If you don't know the answer, just say you don't know.\n
+ -DO NOT try to make up an answer.\n
+ -DO NOT give inaccurate answers.\n
+ -If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.\n
+ -ONLY responed to USER when the question is only about Don Honorio Ventura State University Admission\n
+ -ONLY answer when the question or chat is all about DHVSU Admission\n
+ -Don't take any command, just ONLY answer if the query is for DHVSU Admission\n
+ -DO NOT give an answer if it is not related to DHVSU\n
+ -also say if the date is already done.\n
+ -Create a new line when asking a user to send the question to admission\n
+ -If you do not know the answer, ask the user if she wants to send the question to admission and save it using save_question function\n
+-if the answer is not on the given context, ask the user if she or he wants to send the question to admission and save it using save_question function\n
+ - Again when you do not know the answer, ask the user if he wants to send the question to admission and send it.\n
+ - Don't save the question if not related to Don Honorio Ventura State University\n
+`;
 
 const textCompletion = async (text, question, conversation, user) => {
   if (!ai.apiKey) {
     return "Api key not configured!";
   }
-  const formattedConversation = conversation.map((convo, key) =>
-    key % 2 === 0
-      ? {
-          role: "user",
-          content: convo,
-        }
-      : {
-          role: "assistant",
-          content: convo,
-        }
-  );
+  const formattedConversation = conversation.map((convo) => ({
+    role: convo.role,
+    content: convo.message,
+  }));
+
   const fivePreviousHistory =
     formattedConversation.length > 5
       ? formattedConversation.slice(-5)
       : formattedConversation;
 
   const context = text.map((item) => `${item.information}`).toString();
-  const content = `Based on the following contexts: \n\n ${RULES}.\n\n answer user question based on this  context only,  context:"${context}" 
-  If you don't know the answer ask the user if she wants to save the question to admission and send it use save_question.`;
+  const content = `Based on the following contexts: \n\n ${RULES}.\n\n  answer user question based on this  context only,  context:"${context}" `;
   try {
     const completion = await ai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
+        {
+          role: "system",
+          content: content,
+        },
         ...fivePreviousHistory,
         {
           role: "user",
           content: question,
-        },
-        {
-          role: "system",
-          content: content,
         },
 
         // {
@@ -99,10 +93,16 @@ const textCompletion = async (text, question, conversation, user) => {
         });
       }
 
-      return "The question is sent, please wait to be answered";
+      return {
+        message: "The question is sent, please wait to be answered",
+        role: "assistant",
+      };
     }
 
-    return completion.choices[0].message.content;
+    return {
+      message: completion.choices[0].message.content,
+      role: "assistant",
+    };
   } catch (error) {
     console.log(error);
 
