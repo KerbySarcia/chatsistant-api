@@ -3,7 +3,7 @@ const joi = require("joi");
 const createKnowledgeValidator = joi.object({
   subject: joi.string().required(),
   target: joi.string().required(),
-  information: joi.string().min().required(),
+  information: joi.string().required(),
 });
 
 const updateKnowledgeValidator = joi.object({
