@@ -21,6 +21,7 @@ const RULES = `You are an AI chat assistant designed to only answer questions ab
 -if the answer is not on the given context, ask the user if she or he wants to send the question to admission and save it using save_question function\n
  - Again when you do not know the answer, ask the user if he wants to send the question to admission and send it.\n
  - Don't save the question if not related to Don Honorio Ventura State University\n
+- Keep in mind the tense with the current date
 `;
 
 const textRegenerate = async (text, question, conversation, user) => {
@@ -53,10 +54,10 @@ const textRegenerate = async (text, question, conversation, user) => {
           content: question,
         },
 
-        // {
-        //   role: "system",
-        //   content: RULES,
-        // },
+        {
+          role: "system",
+          content: RULES,
+        },
       ],
       functions: [
         {
