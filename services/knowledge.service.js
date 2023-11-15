@@ -22,14 +22,23 @@ const getAll = async (payload) => {
 };
 
 const create = async (payload) => {
-  const { information } = payload;
+  const { target, value, subject } = payload;
 
-  const isExist = await KNOWLEDGE_SCHEMA.findOne({ information }).lean().exec();
+  const isExist = await KNOWLEDGE_SCHEMA.findOne({
+    information: `${target} - ${subject} - ${value}`,
+  })
+    .lean()
+    .exec();
 
   if (isExist)
     return { status_code: 409, message: "Information is Already Exist." };
 
-  return await KNOWLEDGE_SCHEMA.create(payload);
+  return await KNOWLEDGE_SCHEMA.create({
+    target,
+    subject,
+    value,
+    information: `${target} - ${subject} - ${value}`,
+  });
 };
 
 const findSimilarKnowledges = async (payload, user) => {
@@ -75,7 +84,10 @@ const findSimilarKnowledges = async (payload, user) => {
 const updateKnowledge = async (id, knowledge) => {
   const updatedKnowledge = await KNOWLEDGE_SCHEMA.findOneAndUpdate(
     { _id: id },
-    knowledge,
+    {
+      ...knowledge,
+      information: `${knowledge.target} - ${knowledge.subject} - ${knowledge.value}`,
+    },
     { new: true, projection: { information_embedding: 0 } }
   )
     .lean()

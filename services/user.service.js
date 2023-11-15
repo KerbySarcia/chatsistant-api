@@ -95,12 +95,27 @@ const deleteUser = async (id) => {
 };
 
 const updateUser = async (id, credentials) => {
-  const user = await USER_SCHEMA.findOneAndUpdate({ _id: id }, credentials, {
-    new: true,
-    projection: { password: 0 },
-  })
-    .lean()
-    .exec();
+  let user = null;
+  if (credentials?.password) {
+    const password = await hashPassword(credentials.password);
+    user = await USER_SCHEMA.findOneAndUpdate(
+      { _id: id },
+      { ...credentials, password: password },
+      {
+        new: true,
+        projection: { password: 0 },
+      }
+    )
+      .lean()
+      .exec();
+  } else {
+    user = await USER_SCHEMA.findOneAndUpdate({ _id: id }, credentials, {
+      new: true,
+      projection: { password: 0 },
+    })
+      .lean()
+      .exec();
+  }
 
   return user;
 };

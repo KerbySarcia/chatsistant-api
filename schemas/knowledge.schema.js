@@ -4,8 +4,8 @@ const KNOWLEDGE_SCHEMA = mongoose.Schema(
   {
     subject: { type: String, required: true },
     target: { type: String, required: true },
+    value: { type: String, required: true },
     information: { type: String, required: true },
-    // knowledge_embedding: { type: Array },
   },
   {
     timestamps: true,
