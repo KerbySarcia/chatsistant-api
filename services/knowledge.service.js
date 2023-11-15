@@ -103,10 +103,20 @@ const deleteKnowledge = async (id) => {
   return deletedKnowledge;
 };
 
+const getSubjects = async () => {
+  return await KNOWLEDGE_SCHEMA.find({}, { subject: 1 }).lean().exec();
+};
+
+const getTargets = async () => {
+  return await KNOWLEDGE_SCHEMA.find({}, { target: 1 }).lean().exec();
+};
+
 module.exports = {
   getAll,
   create,
   findSimilarKnowledges,
   updateKnowledge,
   deleteKnowledge,
+  getSubjects,
+  getTargets,
 };
