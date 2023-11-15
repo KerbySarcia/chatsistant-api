@@ -1,7 +1,6 @@
-const { isEmpty } = require("lodash");
 const KNOWLEDGE_SCHEMA = require("../schemas/knowledge.schema");
 const getEmbedding = require("../utils/getEmbedding");
-const openaiService = require("./openai.service");
+const textRegenerate = require("../utils/textCompletion");
 const conversationService = require("../services/conversation.service");
 
 const getAll = async (payload) => {
@@ -60,7 +59,7 @@ const findSimilarKnowledges = async (payload, user) => {
     userId: user?._id,
   });
 
-  const answer = await openaiService.textCompletion(
+  const answer = await textRegenerate(
     similarDocuments,
     payload?.question,
     conversations.conversation_history,
