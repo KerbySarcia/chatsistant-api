@@ -67,14 +67,14 @@ const create = async (validatedUserCredentials) => {
 };
 
 const sendEmail = async (credentials) => {
-  const answer = await openaiService.emailCompletion(credentials.answer);
+  // const answer = await openaiService.emailCompletion(credentials.answer);
   await transporter.sendMail({
     from: "chatsistant@gmail.com",
     to: credentials.to,
     subject: "Admission",
     html: `<h1>Hello this is admission DHVSU</h1>
     <h2>Your Question: ${credentials.question}</h2>
-    <h2>Answer: ${answer}</h2>`,
+    <h2>Answer: ${credentials.answer}</h2>`,
   });
 };
 
