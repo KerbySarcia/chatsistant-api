@@ -1,7 +1,7 @@
 const { isEmpty } = require("lodash");
 const KNOWLEDGE_SCHEMA = require("../schemas/knowledge.schema");
 const getEmbedding = require("../utils/getEmbedding");
-const { textCompletion, validateQuestion } = require("./openai.service");
+const openaiService = require("./openai.service");
 const conversationService = require("../services/conversation.service");
 
 const getAll = async (payload) => {
@@ -13,6 +13,7 @@ const getAll = async (payload) => {
 
   const results = await KNOWLEDGE_SCHEMA.find(options)
     .select({ information_embedding: false })
+    .sort({ _id: -1 })
     .lean()
     .exec();
 
@@ -59,7 +60,7 @@ const findSimilarKnowledges = async (payload, user) => {
     userId: user?._id,
   });
 
-  const answer = await textCompletion(
+  const answer = await openaiService.textCompletion(
     similarDocuments,
     payload?.question,
     conversations.conversation_history,

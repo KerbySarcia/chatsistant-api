@@ -110,6 +110,41 @@ const textCompletion = async (text, question, conversation, user) => {
   }
 };
 
+const emailCompletion = async (answer) => {
+  if (!ai.apiKey) {
+    return "Api key not configured!";
+  }
+  const content = `Create a quick response text with these information (keep in mind the tense with current date, 
+    and remove greetings and regards): ${answer}`;
+  try {
+    const completion = await ai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content: content,
+        },
+      ],
+    });
+    return completion.choices[0].message.content;
+  } catch (error) {
+    // Consider adjusting the error handling logic for your use case
+    throw { error: { message: "an error occured during your request" } };
+
+    // if (error.response) {
+    //   console.error(error.response.status, error.response.data);
+    //   res.status(error.response.status).json(error.response.data);
+    // } else {
+    //   console.error(`Error with OpenAI API request: ${error.message}`);
+    //   res.status(500).json({
+    //     error: {
+    //       message: "An error occurred during your request.",
+    //     },
+    //   });
+    // }
+  }
+};
+
 const validateQuestion = async (question) => {
   if (!ai.apiKey) {
     return "Api key not configured!";
@@ -147,4 +182,5 @@ const validateQuestion = async (question) => {
 module.exports = {
   textCompletion,
   validateQuestion,
+  emailCompletion,
 };

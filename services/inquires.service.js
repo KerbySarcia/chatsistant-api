@@ -22,7 +22,10 @@ const getAll = async (payload) => {
     options = { [payload.options]: { $regex: payload.search } };
   }
 
-  const results = await INQUIRIES_SCHEMA.find(options).lean().exec();
+  const results = await INQUIRIES_SCHEMA.find(options)
+    .sort({ _id: -1 })
+    .lean()
+    .exec();
 
   return {
     items: results,

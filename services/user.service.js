@@ -3,6 +3,7 @@ const conversationService = require("../services/conversation.service");
 const { hashPassword } = require("../utils/password");
 
 const { createTransport } = require("nodemailer");
+const openaiService = require("./openai.service");
 
 const transporter = createTransport({
   service: "gmail",
@@ -66,13 +67,14 @@ const create = async (validatedUserCredentials) => {
 };
 
 const sendEmail = async (credentials) => {
+  const answer = await openaiService.emailCompletion(credentials.answer);
   await transporter.sendMail({
     from: "chatsistant@gmail.com",
     to: credentials.to,
     subject: "Admission",
     html: `<h1>Hello this is admission DHVSU</h1>
     <h2>Your Question: ${credentials.question}</h2>
-    <h2>Answer: ${credentials.answer}</h2>`,
+    <h2>Answer: ${answer}</h2>`,
   });
 };
 
@@ -81,7 +83,11 @@ const findUser = async (option) => {
 };
 
 const getUsers = async () => {
-  return await USER_SCHEMA.find().select({ password: 0 }).lean().exec();
+  return await USER_SCHEMA.find()
+    .select({ password: 0 })
+    .sort({ _id: -1 })
+    .lean()
+    .exec();
 };
 
 const deleteUser = async (id) => {
