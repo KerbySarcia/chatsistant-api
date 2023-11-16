@@ -68,14 +68,40 @@ const create = async (validatedUserCredentials) => {
 
 const sendEmail = async (credentials) => {
   // const answer = await openaiService.emailCompletion(credentials.answer);
-  await transporter.sendMail({
-    from: "chatsistant@gmail.com",
-    to: credentials.to,
-    subject: "Admission",
-    html: `<h1>Hello this is admission DHVSU</h1>
-    <h2>Your Question: ${credentials.question}</h2>
-    <h2>Answer: ${credentials.answer}</h2>`,
-  });
+
+  if (credentials?.emailVerify) {
+    await transporter.sendMail({
+      from: "chatsistant@gmail.com",
+      to: credentials.to,
+      subject: "Admission",
+      html: `<h1>Hello this is admission DHVSU</h1>
+      <h2>Email Verification</h2>
+      <h2>Code: ${credentials?.code}</h2>`,
+    });
+  } else if (credentials?.forgotPassword) {
+    const findEmail = await USER_SCHEMA.findOne({ email: credentials.to })
+      .lean()
+      .exec();
+    if (!findEmail) return { error: { message: "User does not exist" } };
+
+    await transporter.sendMail({
+      from: "chatsistant@gmail.com",
+      to: credentials.to,
+      subject: "Admission",
+      html: `<h1>Hello this is admission DHVSU</h1>
+      <h2>Forgot Password Code</h2>
+      <h2>Code: ${credentials?.code}</h2>`,
+    });
+  } else {
+    await transporter.sendMail({
+      from: "chatsistant@gmail.com",
+      to: credentials.to,
+      subject: "Admission",
+      html: `<h1>Hello this is admission DHVSU</h1>
+     <h2>Your Question: ${credentials.question}</h2>
+      <h2>Answer: ${credentials.answer}</h2>`,
+    });
+  }
 };
 
 const findUser = async (option) => {
