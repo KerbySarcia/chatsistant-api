@@ -54,10 +54,10 @@ const textRegenerate = async (text, question, conversation, user) => {
           content: question,
         },
 
-        {
-          role: "system",
-          content: RULES,
-        },
+        // {
+        //   role: "system",
+        //   content: RULES,
+        // },
       ],
       functions: [
         {
