@@ -17,10 +17,6 @@ const RULES = `You are an AI chat assistant designed to only answer questions ab
  -DO NOT give an answer if it is not related to DHVSU\n
  -also say if the date is already done.\n
  -Create a new line when asking a user to send the question to admission\n
- -If you do not know the answer, ask the user if she wants to send the question to admission and save it using save_question function\n
--if the answer is not on the given context, ask the user if she or he wants to send the question to admission and save it using save_question function\n
- - Again when you do not know the answer, ask the user if he wants to send the question to admission and send it.\n
- - Don't save the question if not related to Don Honorio Ventura State University\n
 - Keep in mind the tense with the current date
 `;
 
@@ -41,43 +37,62 @@ const textRegenerate = async (text, question, conversation, user) => {
   const context = text.map((item) => `${item.information}`).toString();
   const content = `Based on the following contexts: \n\n ${RULES}.\n\n  answer user question based on this  context only,  context:"${context}" `;
   try {
-    const completion = await ai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: content,
-        },
-        ...fivePreviousHistory,
-        {
-          role: "user",
-          content: question,
-        },
+    let completion = null;
 
-        // {
-        //   role: "system",
-        //   content: RULES,
-        // },
-      ],
-      functions: [
-        {
-          name: "save_question",
-          description: "save the question if the answer is not on the context ",
-          parameters: {
-            type: "object",
-            properties: {
-              question: {
-                type: "string",
-                description:
-                  "The question of the user, example, When is the enrollment?, Kailan ang pasukan?",
-              },
-            },
-            required: ["question"],
+    if (user) {
+      completion = await ai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content: `${content} \n
+             -If you do not know the answer, ask the user if she wants to send the question to admission and save it using save_question function\n
+             -if the answer is not on the given context, ask the user if she or he wants to send the question to admission and save it using save_question function\n
+             - Again when you do not know the answer, ask the user if he wants to send the question to admission and send it.\n
+             - Don't save the question if not related to Don Honorio Ventura State University\n`,
           },
-        },
-      ],
-      function_call: "auto",
-    });
+          ...fivePreviousHistory,
+          {
+            role: "user",
+            content: question,
+          },
+        ],
+        functions: [
+          {
+            name: "save_question",
+            description:
+              "save the question if the answer is not on the context ",
+            parameters: {
+              type: "object",
+              properties: {
+                question: {
+                  type: "string",
+                  description:
+                    "The question of the user, example, When is the enrollment?, Kailan ang pasukan?",
+                },
+              },
+              required: ["question"],
+            },
+          },
+        ],
+        function_call: "auto",
+      });
+    } else {
+      completion = await ai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content: content,
+          },
+          ...fivePreviousHistory,
+          {
+            role: "user",
+            content: question,
+          },
+        ],
+      });
+    }
 
     if (!completion.choices[0].message.content) {
       const functionName = completion.choices[0].message.function_call?.name;

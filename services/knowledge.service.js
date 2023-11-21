@@ -78,6 +78,39 @@ const findSimilarKnowledges = async (payload, user) => {
       date: user.createdAt,
     }
   );
+
+  return answer;
+};
+
+const tryKnowledge = async (payload, conversations) => {
+  const embedding = await getEmbedding(payload.question);
+
+  let similarDocuments = await KNOWLEDGE_SCHEMA.aggregate([
+    {
+      $search: {
+        index: "default",
+        knnBeta: {
+          vector: embedding,
+          path: "information_embedding",
+          k: 5,
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        information: 1,
+        score: { $meta: "searchScore" },
+      },
+    },
+  ]);
+
+  const answer = await textRegenerate(
+    similarDocuments,
+    payload?.question,
+    conversations
+  );
+
   return answer;
 };
 
@@ -119,4 +152,5 @@ module.exports = {
   deleteKnowledge,
   getSubjects,
   getTargets,
+  tryKnowledge,
 };

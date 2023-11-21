@@ -17,6 +17,14 @@ router.get("/subject", async (req, res) => {
   const subjects = await knowledgeService.getSubjects();
   return res.json(subjects);
 });
+router.post("/try", async (req, res) => {
+  const payload = req.body;
+  const answer = await knowledgeService.tryKnowledge(
+    { question: payload.question },
+    payload.conversations
+  );
+  res.json(answer);
+});
 router.get("/target", async (req, res) => {
   const targets = await knowledgeService.getTargets();
   return res.json(targets);
