@@ -18,6 +18,7 @@ const RULES = `You are an AI chat assistant designed to only answer questions ab
  -also say if the date is already done.\n
  -Create a new line when asking a user to send the question to admission\n
 - Keep in mind the tense with the current date
+- To display a more readable format to the user, your answer must be formatted in HTML.
 `;
 
 const textRegenerate = async (text, question, conversation, user) => {
@@ -49,7 +50,8 @@ const textRegenerate = async (text, question, conversation, user) => {
              -If you do not know the answer, ask the user if she wants to send the question to admission and save it using save_question function\n
              -if the answer is not on the given context, ask the user if she or he wants to send the question to admission and save it using save_question function\n
              - Again when you do not know the answer, ask the user if he wants to send the question to admission and send it.\n
-             - Don't save the question if not related to Don Honorio Ventura State University\n`,
+             - Don't save the question if not related to Don Honorio Ventura State University\n
+             - format your response to be readable`,
           },
           ...fivePreviousHistory,
           {
@@ -83,7 +85,8 @@ const textRegenerate = async (text, question, conversation, user) => {
         messages: [
           {
             role: "system",
-            content: content,
+            content: `${content} \n
+             - format your response to be readable`,
           },
           ...fivePreviousHistory,
           {
@@ -114,7 +117,6 @@ const textRegenerate = async (text, question, conversation, user) => {
         role: "assistant",
       };
     }
-
     return {
       message: completion.choices[0].message.content,
       role: "assistant",

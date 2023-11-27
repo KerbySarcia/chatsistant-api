@@ -1,6 +1,7 @@
 const USER_SCHEMA = require("../schemas/user.schema");
 const conversationService = require("../services/conversation.service");
 const { hashPassword } = require("../utils/password");
+const emailConstants = require("../common/constants/email-constants");
 
 const { createTransport } = require("nodemailer");
 const openaiService = require("./openai.service");
@@ -74,9 +75,7 @@ const sendEmail = async (credentials) => {
       from: "chatsistant@gmail.com",
       to: credentials.to,
       subject: "Admission",
-      html: `<h1>Hello this is admission DHVSU</h1>
-      <h2>Email Verification</h2>
-      <h2>Code: ${credentials?.code}</h2>`,
+      html: emailConstants.emailVerification(credentials.to, credentials.code),
     });
   } else if (credentials?.forgotPassword) {
     const findEmail = await USER_SCHEMA.findOne({ email: credentials.to })
@@ -88,18 +87,21 @@ const sendEmail = async (credentials) => {
       from: "chatsistant@gmail.com",
       to: credentials.to,
       subject: "Admission",
-      html: `<h1>Hello this is admission DHVSU</h1>
-      <h2>Forgot Password Code</h2>
-      <h2>Code: ${credentials?.code}</h2>`,
+      html: emailConstants.forgotPasswordVerification(
+        credentials.to,
+        credentials.code
+      ),
     });
   } else {
     await transporter.sendMail({
       from: "chatsistant@gmail.com",
       to: credentials.to,
       subject: "Admission",
-      html: `<h1>Hello this is admission DHVSU</h1>
-     <h2>Your Question: ${credentials.question}</h2>
-      <h2>Answer: ${credentials.answer}</h2>`,
+      html: emailConstants.emailInquiry(
+        credentials.to,
+        credentials.question,
+        credentials.answer
+      ),
     });
   }
 };
