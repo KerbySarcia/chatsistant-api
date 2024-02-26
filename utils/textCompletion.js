@@ -18,7 +18,7 @@ const RULES = `You are an AI chat assistant designed to only answer questions ab
  -also say if the date is already done.\n
  -Create a new line when asking a user to send the question to admission\n
 - Keep in mind the tense with the current date
-- To display a more readable format to the user, your answer must be formatted in HTML.
+- Display a more readable format.
 `;
 
 const textRegenerate = async (text, question, conversation, user) => {
